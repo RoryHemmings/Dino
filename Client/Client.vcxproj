@@ -87,6 +87,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\RPMHe\Desktop\Programing\Experiments\Dino\Dino\SocketWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -98,6 +99,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\RPMHe\Desktop\Programing\Experiments\Dino\Dino\SocketWrapper;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,7 +140,13 @@
     <ClCompile Include="ProcessManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="clientexample.h" />
     <ClInclude Include="ProcessManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SocketWrapper\SocketWrapper.vcxproj">
+      <Project>{4cadfaf1-ddf7-46d3-9abd-f06bfe47b98e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

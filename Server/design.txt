@@ -1,0 +1,22 @@
+Socket:
+	Holds all winsock data
+	only has send and recieve
+
+	Derives ServerSocket, and ClientSocket
+	constructor with port, or port and host
+
+Server:
+	holds a ServerSocket
+	manages ClientSocket* vector
+	manages incoming clients and puts them in vectors
+	manages outgoing messages
+	multiple threads (one to communicate with each client)
+
+main:
+	has server
+	holds current client*
+	manages commands
+
+
+TODO:
+	logger
