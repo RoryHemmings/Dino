@@ -147,3 +147,4 @@ ClientSocket::ClientSocket(const string& host, int port) : Socket()
 
 	if (s == INVALID_SOCKET) { close(); throw "Unable to connect to server"; }
 }
+
