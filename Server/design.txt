@@ -20,3 +20,11 @@ main:
 
 TODO:
 	logger
+
+Server:
+	Server is initialized and listens for connections on thread.
+	When it accepts, it creates a new client object and adds it to client vector
+	the user can use "listconns" to see everything in client vector
+	when they see one they can use "connect <ip/id>" to select current to new vector
+
+	another thread talks the current if it exists
