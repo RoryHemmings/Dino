@@ -34,10 +34,9 @@
 #include <iostream>
 #include <string>
 
-#include <SocketWrapper.h>
+#include "Server.h"
 
 #include <windows.h>
-
 #include <stdio.h>
 
 #pragma comment(lib, "Ws2_32.lib")
@@ -60,14 +59,18 @@ int main(int argc, char** argv)
 {
 	printLogo();
 
-	ServerSocket server(DEFAULT_PORT);
+	Server server(DEFAULT_PORT);
 
-	Socket* client = server.accept();
+	string in;
+	
+	cout << "> ";
+	while (cin >> in) {
+		if (in == "exit") return 0;
+		else if (in == "listconns" || in == "listconnections") server.listConnections();
+		else cout << "Command not recognized" << endl;
 
-	string r = client->recieveLine();
-	cout << r << endl;
-
-	client->sendLine(r);
+		cout << "> ";
+	}
 
 	return 0;
 }

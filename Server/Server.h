@@ -5,11 +5,12 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+
+#include <SocketWrapper.h>
 
 #include <windows.h>
 #include <stdio.h>
-
-#include <SocketWrapper.h>
 
 struct Client {
 	Client(Socket* s) : socket(s), ip("0.0.0.0") { }
@@ -36,6 +37,7 @@ public:
 	void talk();
 
 	void setCurrent(Socket* c) { current = c; }
+	void listConnections() const;
 
 	void stop() { socket.close(); }
 

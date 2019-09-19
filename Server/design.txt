@@ -28,3 +28,6 @@ Server:
 	when they see one they can use "connect <ip/id>" to select current to new vector
 
 	another thread talks the current if it exists
+
+Enum of commands and types
+"type/command <params/string>""
