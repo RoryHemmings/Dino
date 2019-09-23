@@ -6,17 +6,35 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
+#include <thread>
 
 #include <SocketWrapper.h>
 
 #include <windows.h>
 #include <stdio.h>
 
-struct Client {
-	Client(Socket* s) : socket(s), ip("0.0.0.0") { }
-	Client() : socket(NULL), ip("0.0.0.0") { }
-	~Client() { delete socket; }
+enum commands {
 
+};
+
+struct Client {
+	Client(Socket* s, std::string addr) : socket(s), ip(addr) { }
+	Client() : socket(NULL), ip("0.0.0.0") { }
+
+	Client& operator=(const Client& rhs) { 
+		if (&rhs != this) { 
+			socket = rhs.socket; 
+			ip = rhs.ip;
+
+			return *this; 
+		}
+	}
+	~Client() { socket = 0; }
+
+	bool operator==(const std::string& rhs) const { return ip == rhs; }
+	void close() { socket->close(); }
+	 
 	Socket* socket;
 	std::string ip;
 };
@@ -25,21 +43,15 @@ class Server
 {
 
 public:
-	Server(int port);
+	explicit Server(int port);
 	Server() : Server(DEFAULT_PORT) { }
 
 	// TODO add rule of three
 
-	// Waits for clients
-	void serve();
-
-	// Talks with current connected client
-	void talk();
-
-	void setCurrent(Socket* c) { current = c; }
+	int setCurrent(const std::string& ip);
 	void listConnections() const;
 
-	void stop() { socket.close(); }
+	void stop();
 
 	int port() const { return iPort; }
 
@@ -50,6 +62,13 @@ private:
 	Client current;
 
 	int iPort;
+	bool running;
+
+	std::vector<std::thread> connections;
+	std::thread acceptLoop;
+
+	// Waits for clients
+	void accept();
 };
 
 #endif

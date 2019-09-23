@@ -33,6 +33,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 #include "Server.h"
 
@@ -55,19 +56,56 @@ void printLogo()
 	SetConsoleTextAttribute(hConsole, 15);
 }
 
+bool space(char c)
+{
+	return c == ' ';
+}
+
+bool not_space(char c)
+{
+	return !space(c);
+}
+
+vector<string> split(const string& s)
+{
+	vector<string> ret;
+	string::const_iterator i = s.begin();
+	while (i != s.end()) {
+		i = find_if(i, s.end(), not_space);
+		string::const_iterator j = find_if(i, s.end(), space);
+
+		if (i != s.end())
+			ret.push_back(string(i, j));
+		i = j;
+	}
+
+	return ret;
+}
+
 int main(int argc, char** argv)
 {
 	printLogo();
 
-	Server server(DEFAULT_PORT);
+	Server server;
 
 	string in;
-	
 	cout << "> ";
-	while (cin >> in) {
-		if (in == "exit") return 0;
-		else if (in == "listconns" || in == "listconnections") server.listConnections();
-		else cout << "Command not recognized" << endl;
+
+	while (getline(cin, in)) {
+		if (in.size() == 0) continue;
+		vector<string> args = split(in);
+		if (args[0] == "exit") { server.stop(); return 0; }
+		else if (args[0] == "listconns" || args[0] == "listconnections") server.listConnections();
+		else if (args[0] == "connect") { 
+			if (args.size() > 1) {
+				if (server.setCurrent(args[1]))
+					cout << "Connected to " << args[1] << endl;
+				else
+					cout << "Couldn't find that ip" << endl;
+			}
+			else cout << "Usage: connect <ip>" << endl;
+		}
+		else cout << "command not recognized" << endl;
 
 		cout << "> ";
 	}

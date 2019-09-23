@@ -81,6 +81,17 @@ void Socket::stop()
 	WSACleanup();
 }
 
+string Socket::getAddr() const
+{
+	SOCKADDR_IN info = { 0 };
+	int addrsize = sizeof(info);
+	getpeername(s, (struct sockaddr*) & info, &addrsize);
+
+	char ret[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &(info.sin_addr), ret, INET_ADDRSTRLEN);
+	return string(ret);
+}
+
 ServerSocket::ServerSocket(int port, int backlog)
 {
 	struct addrinfo* result = NULL, * ptr = NULL, hints;
@@ -98,6 +109,10 @@ ServerSocket::ServerSocket(int port, int backlog)
 	s = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (s == INVALID_SOCKET) { freeaddrinfo(result); stop(); throw "Invalid Socket"; }
 
+	// Set to Non-Blocking
+	u_long arg = 1;
+	ioctlsocket(s, FIONBIO, &arg);
+
 	// Bind
 	if (bind(s, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) { freeaddrinfo(result); close(); stop(); throw "Failed to bind";  }
 	freeaddrinfo(result);
@@ -112,11 +127,25 @@ ServerSocket::ServerSocket(int port, int backlog)
 		printf("Listening on port %d\n", ntohs(sin.sin_port));
 }
 
+//int pollSocket(SOCKET socket)
+//{
+//	struct fd_set rfds;
+//	FD_ZERO(&rfds);
+//	FD_SET(socket, &rfds);
+//
+//	return select(0, &rfds, NULL, NULL, NULL);
+//}
+
+// NON-BLOCKING (call repeatedly) returns 0 if no request
 Socket* ServerSocket::accept()
 {
 	// Accept new connection
 	SOCKET n = ::accept(s, 0, 0);
-	if (n == INVALID_SOCKET) { throw "Invalid Socket"; }
+	if (n == INVALID_SOCKET) { 
+		int rc = WSAGetLastError();
+		if (rc == WSAEWOULDBLOCK) return 0; // Non-Blocking call, no request
+		else throw "Invalid Socket";
+	}
 
 	Socket* ret = new Socket(n);
 	return ret;

@@ -31,3 +31,8 @@ Server:
 
 Enum of commands and types
 "type/command <params/string>""
+
+Disconnect:
+	send message to all clients that asks to dc
+	all threads will end when they get the close message from the client.
+	they will finish recieving and then send close and close

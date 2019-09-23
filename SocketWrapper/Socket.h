@@ -26,7 +26,8 @@ public:
 	void sendLine(std::string) const;
 	void sendBytes(const std::string&) const;
 
-	void close() { closesocket(s); };
+	void close() { closesocket(s); }
+	std::string getAddr() const;
 
 protected:
 	friend class ServerSocket;
