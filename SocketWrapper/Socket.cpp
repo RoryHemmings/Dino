@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Socket::Socket() : s(INVALID_SOCKET)
+Socket::Socket(bool nonBlocking) : s(INVALID_SOCKET), nonBlocking(nonBlocking)
 {
 	start();
 
@@ -25,13 +25,13 @@ string Socket::recieveLine() const
 		int r = recv(s, &c, 1, 0);
 		if (r == 0) {
 			// disconnected
-			return ret;
+			return "!disconnected";
 		} else if (r == -1) {
-			return "";
+			return "!error";
 		}
 
-		ret += c;
 		if (c == '\n') return ret;
+		ret += c;
 	}
 }
 
@@ -92,7 +92,7 @@ string Socket::getAddr() const
 	return string(ret);
 }
 
-ServerSocket::ServerSocket(int port, int backlog)
+ServerSocket::ServerSocket(int port, bool nonBlocking, int backlog) : Socket(nonBlocking)
 {
 	struct addrinfo* result = NULL, * ptr = NULL, hints;
 
@@ -109,9 +109,12 @@ ServerSocket::ServerSocket(int port, int backlog)
 	s = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (s == INVALID_SOCKET) { freeaddrinfo(result); stop(); throw "Invalid Socket"; }
 
+	
 	// Set to Non-Blocking
-	u_long arg = 1;
-	ioctlsocket(s, FIONBIO, &arg);
+	if (nonBlocking) {
+		u_long arg = 1;
+		ioctlsocket(s, FIONBIO, &arg);
+	}
 
 	// Bind
 	if (bind(s, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) { freeaddrinfo(result); close(); stop(); throw "Failed to bind";  }
@@ -127,21 +130,12 @@ ServerSocket::ServerSocket(int port, int backlog)
 		printf("Listening on port %d\n", ntohs(sin.sin_port));
 }
 
-//int pollSocket(SOCKET socket)
-//{
-//	struct fd_set rfds;
-//	FD_ZERO(&rfds);
-//	FD_SET(socket, &rfds);
-//
-//	return select(0, &rfds, NULL, NULL, NULL);
-//}
-
 // NON-BLOCKING (call repeatedly) returns 0 if no request
 Socket* ServerSocket::accept()
 {
 	// Accept new connection
 	SOCKET n = ::accept(s, 0, 0);
-	if (n == INVALID_SOCKET) { 
+	if (n == INVALID_SOCKET) {
 		int rc = WSAGetLastError();
 		if (rc == WSAEWOULDBLOCK) return 0; // Non-Blocking call, no request
 		else throw "Invalid Socket";
@@ -151,7 +145,7 @@ Socket* ServerSocket::accept()
 	return ret;
 }
 
-ClientSocket::ClientSocket(const string& host, int port) : Socket()
+ClientSocket::ClientSocket(const string& host, int port, bool nonBlocking) : Socket(nonBlocking)
 {
 	s = INVALID_SOCKET;
 
@@ -170,6 +164,11 @@ ClientSocket::ClientSocket(const string& host, int port) : Socket()
 			throw "Socket could not be created";
 		}
 		if (::connect(s, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) { close(); s = INVALID_SOCKET; }
+	}
+
+	if (nonBlocking) {
+		u_long arg = 1;
+		ioctlsocket(s, FIONBIO, &arg);
 	}
 
 	freeaddrinfo(result);

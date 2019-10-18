@@ -17,10 +17,6 @@ main:
 	holds current client*
 	manages commands
 
-
-TODO:
-	logger
-
 Server:
 	Server is initialized and listens for connections on thread.
 	When it accepts, it creates a new client object and adds it to client vector
@@ -36,3 +32,33 @@ Disconnect:
 	send message to all clients that asks to dc
 	all threads will end when they get the close message from the client.
 	they will finish recieving and then send close and close
+
+
+Notes:
+	Sockets can be treated as descriptor (adress)
+	associate descriptor with socket - pass that to arrays but talk to sockets with other functions
+	implement get socket from descriptor
+
+Todo:
+	connection handling and basic client functionality
+	transfer command
+	screen sharing
+	screenshot
+	webcam
+	mic
+
+	overhaul the address storage system (ntohs research)
+	make ids based on ids and not ips
+
+Talking Points:
+	path storage
+	threads and references
+
+Errors:
+	send exit message to client when closing server
+
+Links
+	https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-the-output-of-the-command-within-c-using-po
+	https://github.com/melardev/ReverseShell/blob/master/ReverseShellClient/ReverseShellClient.cpp
+	https://stackoverflow.com/questions/8578909/how-to-get-current-console-background-and-text-colors
+	https://www.geeksforgeeks.org/multithreading-in-cpp/

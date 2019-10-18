@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "..\Client\Client.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SocketWrapper", "..\SocketWrapper\SocketWrapper.vcxproj", "{4CADFAF1-DDF7-46D3-9ABD-F06BFE47B98E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Logger", "..\Logger\Logger\Logger.vcxproj", "{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{4CADFAF1-DDF7-46D3-9ABD-F06BFE47B98E}.Release|x64.Build.0 = Release|x64
 		{4CADFAF1-DDF7-46D3-9ABD-F06BFE47B98E}.Release|x86.ActiveCfg = Release|Win32
 		{4CADFAF1-DDF7-46D3-9ABD-F06BFE47B98E}.Release|x86.Build.0 = Release|Win32
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Debug|x64.ActiveCfg = Debug|x64
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Debug|x64.Build.0 = Debug|x64
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Debug|x86.ActiveCfg = Debug|Win32
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Debug|x86.Build.0 = Debug|Win32
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Release|x64.ActiveCfg = Release|x64
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Release|x64.Build.0 = Release|x64
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Release|x86.ActiveCfg = Release|Win32
+		{D7C7DBB5-3966-47F2-8FA9-B33AB880175A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

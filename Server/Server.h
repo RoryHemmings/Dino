@@ -10,33 +10,36 @@
 #include <thread>
 
 #include <SocketWrapper.h>
+#include <Logger.h>
 
 #include <windows.h>
 #include <stdio.h>
 
-enum commands {
-
+enum Command {
+	RUN
 };
 
-struct Client {
-	Client(Socket* s, std::string addr) : socket(s), ip(addr) { }
-	Client() : socket(NULL), ip("0.0.0.0") { }
+class Client {
 
-	Client& operator=(const Client& rhs) { 
-		if (&rhs != this) { 
-			socket = rhs.socket; 
-			ip = rhs.ip;
+public:
+	// Socket Handle (Blocking by default)
+	Client() : socket(0) { }																// Default constructor
+	Client(Socket* s) : socket(s) { }														// Conversion consturctor from Socket* to Client object
+	Client(const Client& rhs) : socket() { if (rhs.socket) socket = rhs.socket->clone(); }	// Copy constructor
+	Client& operator=(const Client& rhs);													// Assignment operator
+	~Client() { delete socket; }															// Destructor
 
-			return *this; 
-		}
-	}
-	~Client() { socket = 0; }
+	bool operator==(const std::string& rhs) const { return socket->getAddr() == rhs; }		// Comparison operator
+	void close() { socket->close(); }														// Close socket							
 
-	bool operator==(const std::string& rhs) const { return ip == rhs; }
-	void close() { socket->close(); }
-	 
+	operator bool() const { return socket; }												// Bool conversion
+	Socket& operator*() const { if (socket) return *socket; }								// Dereference operator
+	Socket* operator->() const { if (socket) return socket; }								// Arrow operator
+	
+
+private:
 	Socket* socket;
-	std::string ip;
+
 };
 
 class Server
@@ -46,17 +49,18 @@ public:
 	explicit Server(int port);
 	Server() : Server(DEFAULT_PORT) { }
 
-	// TODO add rule of three
+	void sendCurrent(const Command& command, const std::vector<std::string>& args) const;
 
-	int setCurrent(const std::string& ip);
+	bool setCurrent(const std::string& ip);
 	void listConnections() const;
 
 	void stop();
 
 	int port() const { return iPort; }
+	std::string currentIp() const;
 
 private:
-	ServerSocket socket;
+	ServerSocket master_socket;
 	std::vector<Client> clients;
 
 	Client current;
@@ -64,12 +68,37 @@ private:
 	int iPort;
 	bool running;
 
-	std::vector<std::thread> connections;
-	std::thread acceptLoop;
-
-	// Waits for clients
-	void accept();
+	std::thread recieve_thread;
+	void r_loop();
 };
 
 #endif
+
+//struct Client {
+//	// Creates blocking socket (exits when recieves the exit command)
+//	Client(Socket* s, std::string addr) : socket(s), ip(addr), recv_loop(&Client::r_loop, this) { }
+//	Client() : socket(NULL), ip("0.0.0.0") { }
+//
+//	Client& operator=(const Client& rhs) {
+//		if (&rhs != this) {
+//			socket = rhs.socket;
+//			ip = rhs.ip;
+//
+//			return *this;
+//		}
+//	}
+//	~Client() { recv_loop.join(); socket = 0; }
+//
+//	bool operator==(const std::string& rhs) const { return ip == rhs; }
+//	void close() { socket->close(); }
+//
+//	operator bool() const { return socket; }
+//
+//	void r_loop();
+//
+//	Socket* socket;
+//	std::string ip;
+//
+//	std::thread recv_loop;
+//};
 

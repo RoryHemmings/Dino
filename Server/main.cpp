@@ -19,16 +19,7 @@
 //                                                                  
 //      
 //  Server
-//	Version 0.1 By Rory Hemmings
-//
-//	1. Initialize Winsock.
-//	1.5 Get server info
-//  2. Create a socket.
-//  3. Bind the socket.
-//  4. Listen on the socket for a client.
-//  5. Accept a connection from a client.
-//  6. Receiveand send data.
-//  7. Disconnect.
+//	Version 1.0 By Rory Hemmings
 //
 
 #include <iostream>
@@ -40,6 +31,8 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include <Logger.h>
+
 #pragma comment(lib, "Ws2_32.lib")
 
 #define LOGO "DDDDDDDDDDDDD          iiii                                     \nD::::::::::::DDD      i::::i                                    \nD:::::::::::::::DD     iiii                                     \nDDD:::::DDDDD:::::D                                             \n  D:::::D    D:::::D iiiiiii nnnn  nnnnnnnn       ooooooooooo   \n  D:::::D     D:::::Di:::::i n:::nn::::::::nn   oo:::::::::::oo \n  D:::::D     D:::::D i::::i n::::::::::::::nn o:::::::::::::::o\n  D:::::D     D:::::D i::::i nn:::::::::::::::no:::::ooooo:::::o\n  D:::::D     D:::::D i::::i   n:::::nnnn:::::no::::o     o::::o\n  D:::::D     D:::::D i::::i   n::::n    n::::no::::o     o::::o\n  D:::::D     D:::::D i::::i   n::::n    n::::no::::o     o::::o\n  D:::::D    D:::::D  i::::i   n::::n    n::::no::::o     o::::o\nDDD:::::DDDDD:::::D  i::::::i  n::::n    n::::no:::::ooooo:::::o\nD:::::::::::::::DD   i::::::i  n::::n    n::::no:::::::::::::::o\nD::::::::::::DDD     i::::::i  n::::n    n::::n oo:::::::::::oo \nDDDDDDDDDDDDD        iiiiiiii  nnnnnn    nnnnnn   ooooooooooo   \n"
@@ -48,12 +41,7 @@ using namespace std;
 
 void printLogo()
 {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, 12);
-
-	printf(LOGO);
-
-	SetConsoleTextAttribute(hConsole, 15);
+	LOGGER.logColorLine(LOGO, 12);
 }
 
 bool space(char c)
@@ -96,7 +84,7 @@ int main(int argc, char** argv)
 		vector<string> args = split(in);
 		if (args[0] == "exit") { server.stop(); return 0; }
 		else if (args[0] == "listconns" || args[0] == "listconnections") server.listConnections();
-		else if (args[0] == "connect") { 
+		else if (args[0] == "connect") {
 			if (args.size() > 1) {
 				if (server.setCurrent(args[1]))
 					cout << "Connected to " << args[1] << endl;
@@ -105,9 +93,12 @@ int main(int argc, char** argv)
 			}
 			else cout << "Usage: connect <ip>" << endl;
 		}
-		else cout << "command not recognized" << endl;
+		else {
+			server.sendCurrent(RUN, args);
+		}
+		//else cout << "command not recognized" << endl;
 
-		cout << "> ";
+		cout << server.currentIp() << "> ";
 	}
 
 	return 0;

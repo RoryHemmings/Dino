@@ -137,11 +137,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="ProcessManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clientexample.h" />
-    <ClInclude Include="ProcessManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SocketWrapper\SocketWrapper.vcxproj">
